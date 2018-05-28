@@ -3,9 +3,9 @@
 /exp/*
 /__pycache__
 /__pycache__/*
-/exp
 /exp/*/*/*
 /exp/*/*/*/*
+!/exp/output_folder
 /mfcc_shu
 /mfcc_shu/*
 /fmllr_shu
