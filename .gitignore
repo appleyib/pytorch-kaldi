@@ -5,6 +5,7 @@
 /__pycache__/*
 /exp
 /exp/*/*/*
+/exp/*/*/*/*
 /mfcc_shu
 /mfcc_shu/*
 /fmllr_shu
