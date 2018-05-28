@@ -36,6 +36,7 @@ import sys
 options=read_conf()
 
 # to do options
+
 do_training=bool(int(options.do_training))
 do_eval=bool(int(options.do_eval))
 do_forward=bool(int(options.do_forward))

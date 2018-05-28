@@ -1,0 +1,12 @@
+/slurm-*.out
+/exp/*/*
+/exp/*
+/__pycache__
+/__pycache__/*
+/exp
+/exp/*/*/*
+/mfcc_shu
+/mfcc_shu/*
+/fmllr_shu
+/fmllr_shu/*
+
