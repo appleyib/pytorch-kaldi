@@ -1,6 +1,6 @@
 #!/bin/bash
 #This batch outputs the WER of test set generated from the weight of the language model weight that has lowest WER in dev set to.
-for x in exp/*/decod*; do
+for x in exp/TIMIT_liGRU_fmllr_Third_Try/decoding_dev; do
 	if [ -d "$x" ]; then
 		# find the best WER for the dev set
 		dev_wer=$(
@@ -9,7 +9,7 @@ for x in exp/*/decod*; do
 			grep Sum $x/score_*/*.sys 2> /dev/null |
 			./best_wer.sh)
 		echo "${dev_wer}"
-		test_file="$(echo "${dev_wer}" | awk '{print $(NF)}' | sed 's/decodng_dev/decoding_test/g')"
+		test_file="$(echo "${dev_wer}" | awk '{print $(NF)}' | sed 's/decoding_dev/decoding_test/g')"
 		grep -H Sum ${test_file} 2> /dev/null | ./best_wer.sh
 	fi
 done
