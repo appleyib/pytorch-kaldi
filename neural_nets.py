@@ -954,6 +954,278 @@ class LSTM(nn.Module):
           loss=loss+self.twin_w*reg
         
       return [loss,err,pout]
-  
+ 
+class custom_CNN(nn.Module):
+    
+    def __init__(self):
+       super(CNN_feaproc,self).__init__()
+       # a simplest conv layer
+       self.conv1 = nn.Conv2d(1, 1, 3)
+       
+    def forward(self, x):
+       steps=x.shape[0]
+       batch=x.shape[1]
+       x=x.view(x.shape[0]*x.shape[1],1,-1,1)
+       out= out.view(steps,batch,-1)
+       return out
+ 
+ class CNN_GRU(nn.Module):
+    def __init__(self, options):
+        super(GRU, self).__init__()
+        
+        # Reading options:
+        self.input_dim=options.input_dim
+        self.hidden_dim=int(options.hidden_dim)
+        self.N_hid=int(options.N_hid)
+        self.num_classes=options.num_classes
+        self.drop_rate=float(options.drop_rate)
+        self.use_batchnorm=bool(int(options.use_batchnorm))
+        self.use_laynorm=bool(int(options.use_laynorm))
+
+        self.use_cuda=bool(int(options.use_cuda))
+        self.bidir=bool(int(options.bidir))
+        self.skip_conn=bool(int(options.skip_conn))
+        self.act=options.act
+        self.resgate=bool(int(options.resgate))
+        self.minimal_gru=bool(int(options.minimal_gru))
+        self.act_gate=options.act_gate
+        self.cost=options.cost
+        self.twin_reg=bool(int(options.twin_reg))
+        self.twin_w=float(options.twin_w)
+        self.cnn_pre=bool(int(options.cnn_pre))
+        
+        
+        # List initialization
+        self.wzx  = nn.ModuleList([]) # Update Gate
+        self.whx  = nn.ModuleList([]) # Candidate (feed-forward)
+        
+        self.uzh  = nn.ModuleList([])  # Update Gate
+        self.uhh  = nn.ModuleList([])  # Candidate (recurrent)
+        
+        if self.resgate:
+         self.wrx  = nn.ModuleList([]) 
+         self.urh  = nn.ModuleList([])  
+         self.bn_wrx  = nn.ModuleList([])
+         
+        if self.use_batchnorm:
+         self.bn_wzx  = nn.ModuleList([])
+         self.bn_whx  = nn.ModuleList([])
+         
+        if self.use_laynorm:
+         self.ln  = nn.ModuleList([])
+                 
+        if self.act=="relu":
+            self.act=nn.ReLU()
+            
+        if self.act=="tanh":
+            self.act=nn.Tanh()
+            
+        if self.act=="sigmoid":
+            self.act=nn.Sigmoid()
+        
+        if self.act=="normrelu":
+            self.act=normrelu()
+            
+        if self.act_gate=="relu":
+            self.act_gate=nn.ReLU()
+            
+        if self.act_gate=="tanh":
+            self.act_gate=nn.Tanh()
+            
+        if self.act_gate=="sigmoid":
+            self.act_gate=nn.Sigmoid()
+        
+        if self.act_gate=="normrelu":
+            self.act_gate=normrelu()
+        
+        curr_dim=self.input_dim
+        
+        # also puts cnn layer before GRU
+   		# We will use original input channel dimension for now
+        # curr_dim=700
+        self.cnn=custom_CNN()
+        
+        for i in range(self.N_hid):
+                      
+          # wx initialization
+          if self.use_batchnorm:
+           self.wzx.append(nn.Linear(curr_dim, self.hidden_dim,bias=False))
+           self.whx.append(nn.Linear(curr_dim, self.hidden_dim,bias=False))
+           if self.resgate:
+               self.wrx.append(nn.Linear(curr_dim, self.hidden_dim,bias=False))
+               
+          else:
+           self.wzx.append(nn.Linear(curr_dim, self.hidden_dim))
+           self.whx.append(nn.Linear(curr_dim, self.hidden_dim))
+           if self.resgate:
+             self.wrx.append(nn.Linear(curr_dim, self.hidden_dim))
+         
+          # uh initialization
+          self.uzh.append(nn.Linear(self.hidden_dim, self.hidden_dim,bias=False))
+          self.uhh.append(nn.Linear(self.hidden_dim, self.hidden_dim,bias=False))
+          if self.resgate:
+            self.urh.append(nn.Linear(self.hidden_dim, self.hidden_dim,bias=False))
+   
+          # batch norm initialization
+          if self.use_batchnorm:
+           self.bn_wzx.append(nn.BatchNorm1d(self.hidden_dim,momentum=0.05))
+           self.bn_whx.append(nn.BatchNorm1d(self.hidden_dim,momentum=0.05))
+           if self.resgate:
+             self.bn_wrx.append(nn.BatchNorm1d(self.hidden_dim,momentum=0.05))
+          
+          # layer norm initialization
+          if self.use_laynorm:
+             self.ln.append(LayerNorm(self.hidden_dim))
+             
+          if self.bidir:
+           curr_dim=2*self.hidden_dim
+          else:
+            curr_dim=self.hidden_dim   
+        
+        # output layer initialization
+        self.fco = nn.Linear(curr_dim, self.num_classes)
+
+        # loss definition
+        if self.cost=="nll":
+         self.criterion = nn.NLLLoss()
+         
+        if self.cost=="mse":
+         self.criterion = torch.nn.MSELoss()
+               
+    
+    def forward(self, x,lab,test_flag):
+    
+      # initial state
+      if self.bidir or self.twin_reg:
+          h_init = Variable(torch.zeros(2*x.shape[1], self.hidden_dim))
+      else:
+          h_init = Variable(torch.zeros(x.shape[1],self. hidden_dim))   
+           
+      # Drop mask initialization             
+      if test_flag==0:
+         drop_mask=Variable(torch.bernoulli(torch.Tensor(h_init.shape[0],h_init.shape[1]).fill_(1-self.drop_rate)))
+      else:
+         drop_mask=Variable(torch.FloatTensor([1-self.drop_rate]))
+          
+      if self.use_cuda:
+          x=x.cuda()
+          lab=lab.cuda()
+          h_init=h_init.cuda()
+          drop_mask=drop_mask.cuda()
+          
+      if self.twin_reg:
+          reg=0
+          
+      if self.cnn_pre:
+          x=self.cnn(x)
+          
+      # Processing hidden layers
+      for i in range(self.N_hid):
+        
+        # frame concatenation for bidirectional RNNs
+        if self.bidir or self.twin_reg: 
+            x=torch.cat([x,flip(x,0)],1)
+           
+        # Feed-forward affine transformation (done in parallel)
+        wzx_out=self.wzx[i](x)
+        whx_out=self.whx[i](x)
+        if self.resgate:
+         wrx_out=self.wrx[i](x)
+        
+        # Applying batch norm
+        if self.use_batchnorm:
+         wzx_out_bn=self.bn_wzx[i](wzx_out.view(wzx_out.shape[0]*wzx_out.shape[1],wzx_out.shape[2]))
+         wzx_out=wzx_out_bn.view(wzx_out.shape[0],wzx_out.shape[1],wzx_out.shape[2])
+                 
+         whx_out_bn=self.bn_whx[i](whx_out.view(whx_out.shape[0]*whx_out.shape[1],whx_out.shape[2]))
+         whx_out=whx_out_bn.view(whx_out.shape[0],whx_out.shape[1],whx_out.shape[2])
+         
+         if self.resgate:         
+          wrx_out_bn=self.bn_wrx[i](wrx_out.view(wrx_out.shape[0]*wrx_out.shape[1],wrx_out.shape[2]))
+          wrx_out=wrx_out_bn.view(wrx_out.shape[0],wrx_out.shape[1],wrx_out.shape[2]) 
+         
+        
+        if i==0 and self.skip_conn:
+          prev_pre_act= Variable(torch.zeros(whx_out.shape[0],whx_out.shape[1],whx_out.shape[2]))
+          if self.use_cuda:
+            prev_pre_act=prev_pre_act.cuda()
+          
+        if i>0 and self.skip_conn:
+          prev_pre_act=pre_act    
+
+        # Processing time steps
+        hiddens = []
+        pre_act = []
+        h=h_init
+        
+        for k in range(x.shape[0]):
+          zt=self.act_gate(wzx_out[k]+self.uzh[i](h))
+          
+          if self.resgate: 
+            if self.minimal_gru:
+             at=whx_out[k]+self.uhh[i](zt*h)
+            else:
+             rt=self.act_gate(wrx_out[k]+self.urh[i](h))
+             at=whx_out[k]+self.uhh[i](rt*h)
+          else:
+             at=whx_out[k]+self.uhh[i](h)
+             
+          if self.skip_conn:
+              pre_act.append(at)
+              at=at-prev_pre_act[k]
+              
+           
+          if self.use_laynorm:
+              at=self.ln[i](at)
+              
+          hcand=self.act(at)*drop_mask
+          h=(zt*h+(1-zt)*hcand)
+          
+          hiddens.append(h)
+          
+    
+        # stacking hidden states
+        h=torch.stack(hiddens)
+        if self.skip_conn:
+         pre_act=torch.stack(pre_act)
+
+         
+        # bidirectional concatenations
+        if self.bidir:
+         h_f=h[:,0:int(x.shape[1]/2)]
+         h_b=flip(h[:,int(x.shape[1]/2):x.shape[1]].contiguous(),0)
+         h=torch.cat([h_f,h_b],2)
+         
+        if self.twin_reg:
+          if not(self.bidir):
+            h_f=h[:,0:int(x.shape[1]/2)]
+            h_b=flip(h[:,int(x.shape[1]/2):x.shape[1]].contiguous(),0)
+            h=h_f
+          reg=reg+torch.mean((h_f - h_b)**2)
+        
+        # setup x for the next hidden layer
+        x=h
+
+      # computing output (done in parallel)
+      out=self.fco(h)
+
+        
+      # computing loss
+      if self.cost=="nll":
+        pout=F.log_softmax(out,dim=2)
+        pred=torch.max(pout,dim=2)[1]
+        loss=self.criterion(pout.view(h.shape[0]*h.shape[1],-1), lab.view(-1))#+1.0*reg  
+        err = torch.sum((pred!=lab).float())/(h.shape[0]*h.shape[1])
+        
+      if self.cost=="mse":
+        loss=self.criterion(out, lab)
+        pout=out
+        err=Variable(torch.FloatTensor([0]))
+        
+      if self.twin_reg:
+          loss=loss+self.twin_w*reg
+        
+      return [loss,err,pout]
+
     
    

@@ -36,7 +36,6 @@ import sys
 options=read_conf()
 
 # to do options
-
 do_training=bool(int(options.do_training))
 do_eval=bool(int(options.do_eval))
 do_forward=bool(int(options.do_forward))
@@ -82,6 +81,8 @@ if NN_type=='GRU':
 if NN_type=='MLP':
    from neural_nets import MLP as ann
    rnn=0
+if NN_type=='CNN_GRU':
+    from neural_nets import CNN_GRU as ann
 
 
 start_time=timeit.default_timer()
