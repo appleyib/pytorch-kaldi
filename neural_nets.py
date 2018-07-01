@@ -960,7 +960,7 @@ class custom_CNN(nn.Module):
     def __init__(self):
        super(CNN_feaproc,self).__init__()
        # a simplest conv layer
-       self.conv1 = nn.Conv2d(1, 1, 3)
+       self.conv1 = nn.Conv2d(1, 1, 3, 1)
        
     def forward(self, x):
        steps=x.shape[0]
