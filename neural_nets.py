@@ -966,7 +966,7 @@ class custom_CNN(nn.Module):
        steps=x.shape[0]
        batch=x.shape[1]
        x=x.view(x.shape[0]*x.shape[1],1,-1,1)
-       out= out.view(steps,batch,-1)
+       out= x.view(steps,batch,-1)
        return out
  
 class CNN_GRU(nn.Module):
