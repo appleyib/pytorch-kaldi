@@ -969,7 +969,7 @@ class custom_CNN(nn.Module):
        out= out.view(steps,batch,-1)
        return out
  
- class CNN_GRU(nn.Module):
+class CNN_GRU(nn.Module):
     def __init__(self, options):
         super(GRU, self).__init__()
         
