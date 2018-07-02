@@ -965,7 +965,7 @@ class custom_CNN(nn.Module):
     def forward(self, x):
        steps=x.shape[0]
        batch=x.shape[1]
-       x=x.view(x.shape[0]*x.shape[1],1,-1,1)
+       x=self.conv1(x.view(x.shape[0]*x.shape[1],1,-1,1));
        out= x.view(steps,batch,-1)
        return out
  
