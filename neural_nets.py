@@ -958,7 +958,7 @@ class LSTM(nn.Module):
 class custom_CNN(nn.Module):
     
     def __init__(self):
-       super(CNN_feaproc,self).__init__()
+       super(custom_CNN,self).__init__()
        # a simplest conv layer
        self.conv1 = nn.Conv2d(1, 1, 3, 1)
        
@@ -971,7 +971,7 @@ class custom_CNN(nn.Module):
  
 class CNN_GRU(nn.Module):
     def __init__(self, options):
-        super(GRU, self).__init__()
+        super(CNN_GRU, self).__init__()
         
         # Reading options:
         self.input_dim=options.input_dim
