@@ -83,6 +83,7 @@ if NN_type=='MLP':
    rnn=0
 if NN_type=='CNN_GRU':
     from neural_nets import CNN_GRU as ann
+    rnn=1
 
 
 start_time=timeit.default_timer()
