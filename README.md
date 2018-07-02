@@ -1,8 +1,9 @@
-# pytorch-kaldi with no forward-looking weight of lanuguage model
+# pytorch-kaldi with custom DNN layer
 This repository was forked from mravanelli/pytorch-kaldi. Make sure you have read the readme file of the original pytorch-kaldi repository before you work with this one.
 
 ## Introduction:
-The original repository of pytorch-kaldi uses forwardling-looking to get the best weight of the language model on kaldi. This repository takes it out.
+This repository adds some custom DNN layers on the original pytorch-kaldi and uses the weight of language model which is from the dev data set that has the lowest WER.
+The original repository uses the lanugage model weight which is from the test set that has lowest WER.
 
 ## Prerequisites & How to run:
 Check the readme file in the original reposiotry. Also, make sure the python version is 2.7.x.
