@@ -965,19 +965,19 @@ class custom_CNN(nn.Module):
        self.cw_size=11
         
        # a simplest conv layer
-       self.conv1 = nn.Conv2d(1, 1, self.cnn_filter_size, self.cnn_paddings)
+       self.conv1 = nn.Conv2d(1, 1, self.cnn_filter_size, padding=(self.cnn_paddings,self.cnn_paddings))
        
     def forward(self, x):
        steps=x.shape[0]
        batch=x.shape[1]
-       print 'cw size', self.cw_size
-       print "input x size", x.shape
+       #print 'cw size', self.cw_size
+       #print "input x size", x.shape
        x=x.view(steps*batch,1,self.cw_size,-1)
-       print "before conv1 x size", x.shape
+       #print "before conv1 x size", x.shape
        x=self.conv1(x)
-       print "after conv1 x size", x.shape
+       #print "after conv1 x size", x.shape
        x=x.view(steps,batch,-1)
-       print "out conv1 x size", x.shape
+       #print "out conv1 x size", x.shape
        return x
  
 class CNN_GRU(nn.Module):
@@ -1109,7 +1109,7 @@ class CNN_GRU(nn.Module):
       if self.bidir or self.twin_reg:
           h_init = Variable(torch.zeros(2*x.shape[1], self.hidden_dim))
       else:
-          h_init = Variable(torch.zeros(x.shape[1],self. hidden_dim))   
+          h_init = Variable(torch.zeros(x.shape[1],self.hidden_dim))   
            
       # Drop mask initialization             
       if test_flag==0:
