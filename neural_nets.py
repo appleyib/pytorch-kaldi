@@ -987,7 +987,7 @@ class CNN_GRU(nn.Module):
         self.drop_rate=float(options.drop_rate)
         self.use_batchnorm=bool(int(options.use_batchnorm))
         self.use_laynorm=bool(int(options.use_laynorm))
-
+        self.cnn_pre=bool(int(options.cnn_pre))
         self.use_cuda=bool(int(options.use_cuda))
         self.bidir=bool(int(options.bidir))
         self.skip_conn=bool(int(options.skip_conn))
