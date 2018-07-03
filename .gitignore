@@ -6,9 +6,6 @@
 /exp/*/*/*
 /exp/*/*/*/*
 !/exp/output_folder
-/mfcc_shu
-/mfcc_shu/*
-/fmllr_shu
-/fmllr_shu/*
 .DS_store
+*.pyc
 
