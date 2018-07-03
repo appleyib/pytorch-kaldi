@@ -965,7 +965,7 @@ class custom_CNN(nn.Module):
        self.cw_size=11
         
        # a simplest conv layer
-       self.conv1 = nn.Conv2d(1, 1, cnn_filter_size, cnn_paddings)
+       self.conv1 = nn.Conv2d(1, 1, self.cnn_filter_size, self.cnn_paddings)
        
     def forward(self, x):
        steps=x.shape[0]
