@@ -960,9 +960,9 @@ class custom_CNN(nn.Module):
     def __init__(self, options):
        super(custom_CNN,self).__init__()
        self.cnn_pre=bool(int(options.cnn_pre))
-       self.cnn_filter_size=int(options.cnn_filter_size)
-       self.cnn_paddings=int(options.cnn_paddings)
-       self.cw_size=int(options.cw_left)+int(options.cw_right)+1
+       self.cnn_filter_size=3
+       self.cnn_paddings=1
+       self.cw_size=11
         
        # a simplest conv layer
        self.conv1 = nn.Conv2d(1, 1, cnn_filter_size, cnn_paddings)
