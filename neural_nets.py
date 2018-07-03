@@ -957,7 +957,7 @@ class LSTM(nn.Module):
  
 class custom_CNN(nn.Module):
     
-    def __init__(self):
+    def __init__(self, options):
        super(custom_CNN,self).__init__()
        self.cnn_pre=bool(int(options.cnn_pre))
        self.cnn_filter_size=int(options.cnn_filter_size)
@@ -1048,7 +1048,7 @@ class CNN_GRU(nn.Module):
         # also puts cnn layer before GRU
    		# We will use original input channel dimension for now
         # curr_dim=700
-        self.cnn=custom_CNN()
+        self.cnn=custom_CNN(options)
         
         for i in range(self.N_hid):
                       
