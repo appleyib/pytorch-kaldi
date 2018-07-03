@@ -965,9 +965,14 @@ class custom_CNN(nn.Module):
     def forward(self, x):
        steps=x.shape[0]
        batch=x.shape[1]
-       x=self.conv1(x.view(x.shape[0]*x.shape[1],1,-1,1));
-       out= x.view(steps,batch,-1)
-       return out
+       print "input of custom CNN's shape:", x.shape
+       x=x.view(x.shape[0]*x.shape[1],1,-1,1)
+       print "before conv1:", x.shape
+       x=self.conv1(x)
+       print "after conv1:", x.shape
+       x=x.view(steps,batch,-1)
+       print "output of CNN's shape:", x.shape
+       return x
  
 class CNN_GRU(nn.Module):
     def __init__(self, options):
