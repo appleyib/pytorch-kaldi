@@ -317,7 +317,7 @@ def read_conf():
 
  if Config.has_option('architecture', 'cnn_act'):
     options.cnn_act=Config.get('architecture', 'cnn_act')
-    print coptions.cnn_act
+    print options.cnn_act
     
  if Config.has_option('architecture', 'seed'):
     options.seed=Config.get('architecture', 'seed')
