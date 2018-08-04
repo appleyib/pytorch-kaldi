@@ -1097,15 +1097,15 @@ class CNN_GRU(nn.Module):
         curr_dim=self.input_dim
         
         # also puts cnn layer before GRU
-   		# We will use original input channel dimension for now
-   		if self.cnn_pre:
-   			if self.cnn_type=="CNN_on_batch":
-        		self.cnn=CNN_on_batch(options)
-        	else:
-        		self.cnn=CNN_on_cw(options)
+        # We will use original input channel dimension for now
+        if self.cnn_pre:
+            if self.cnn_type=="CNN_on_batch":
+                self.cnn=CNN_on_batch(options)
+            else:
+                self.cnn=CNN_on_cw(options)
 
         if self.cnn_act=="relu":
-        	self.cnn_act=nn.ReLU()
+            self.cnn_act=nn.ReLU()
 
         if self.cnn_act=="tanh":
             self.cnn_act=nn.Tanh()
