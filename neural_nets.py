@@ -954,18 +954,30 @@ class LSTM(nn.Module):
           loss=loss+self.twin_w*reg
         
       return [loss,err,pout]
- 
-class custom_CNN(nn.Module):
+
+
+
+# This class represents a CNN layer which is applied on one context window.
+# If the kernel size and padding number Are not specfied from the config file,
+# then will be set to 3 and 1 for default.
+class CNN_on_cw(nn.Module):
     
     def __init__(self, options):
-       super(custom_CNN,self).__init__()
-       self.cnn_pre=bool(int(options.cnn_pre))
-       self.cnn_filter_size=3
-       self.cnn_paddings=1
-       self.cw_size=11
+       	super(CNN_on_cw,self).__init__()
+       	if options.cnn_filter_size:
+			self.cnn_filter_size=int(options.cnn_filter_size)
+		else:
+			self.cnn_filter_size=3
+
+		if options.cnn_paddings:
+			self.cnn_paddings=int(options.cnn_paddings)
+		else:
+			self.cnn_paddings=1
+
+		self.cw_size = int(options.cw_left) + int(options.cw_right) + 1
         
-       # a simplest conv layer
-       self.conv1 = nn.Conv2d(1, 1, self.cnn_filter_size, padding=(self.cnn_paddings,self.cnn_paddings))
+       	# a simplest conv layer
+       	self.conv1 = nn.Conv2d(1, 1, self.cnn_filter_size, padding=(self.cnn_paddings,self.cnn_paddings))
        
     def forward(self, x):
        steps=x.shape[0]
@@ -979,6 +991,41 @@ class custom_CNN(nn.Module):
        x=x.view(steps,batch,-1)
        #print "out conv1 x size", x.shape
        return x
+
+# this class represents a CNN layer which is applied on the whole input batch
+# If the kernel size and padding number Are not specfied from the config file,
+# then will be set to 3 and 1 for default.
+class CNN_on_batch(nn.Module):
+    
+    def __init__(self, options):
+       	super(CNN_on_batch,self).__init__()
+       	if options.cnn_filter_size:
+			self.cnn_filter_size=int(options.cnn_filter_size)
+		else:
+			self.cnn_filter_size=3
+
+		if options.cnn_paddings:
+			self.cnn_paddings=int(options.cnn_paddings)
+		else:
+			self.cnn_paddings=1
+        
+       	# a simplest conv layer
+       	self.conv1 = nn.Conv2d(1, 1, self.cnn_filter_size, padding=(self.cnn_paddings,self.cnn_paddings))
+       
+    def forward(self, x):
+       #print "input x size", x.shape
+       steps=x.shape[0]
+       batch=x.shape[1]
+       x=x.transpose(x, perm=[1, 0, 2])
+       x=x.view(batch, 1, steps, -1)
+       #print "before conv1 x size", x.shape
+       x=self.conv1(x)
+       #print "after conv1 x size", x.shape
+       x=x.view(batch, steps, -1)
+       x=x.transpose(x, perm=[1, 0, 2])
+       #print "out conv1 x size", x.shape
+       return x
+
  
 class CNN_GRU(nn.Module):
     def __init__(self, options):
@@ -993,6 +1040,7 @@ class CNN_GRU(nn.Module):
         self.use_batchnorm=bool(int(options.use_batchnorm))
         self.use_laynorm=bool(int(options.use_laynorm))
         self.cnn_pre=bool(int(options.cnn_pre))
+        self.cnn_act=options.cnn_act
         self.use_cuda=bool(int(options.use_cuda))
         self.bidir=bool(int(options.bidir))
         self.skip_conn=bool(int(options.skip_conn))
@@ -1052,8 +1100,24 @@ class CNN_GRU(nn.Module):
         
         # also puts cnn layer before GRU
    		# We will use original input channel dimension for now
-        # curr_dim=700
-        self.cnn=custom_CNN(options)
+   		if self.cnn_pre:
+   			if self.cnn_type=="CNN_on_batch":
+        		self.cnn=CNN_on_batch(options)
+        	else:
+        		self.cnn=CNN_on_cw(options)
+
+        if self.cnn_act=="relu":
+        	self.cnn_act=nn.ReLU()
+
+        if self.cnn_act=="tanh":
+            self.cnn_act=nn.Tanh()
+        
+        if self.cnn_act=="sigmoid":
+            self.cnn_act=nn.Sigmoid()
+        
+        if self.cnn_act=="normrelu":
+            self.cnn_act=normrelu()
+
         
         for i in range(self.N_hid):
                       
@@ -1128,6 +1192,9 @@ class CNN_GRU(nn.Module):
           
       if self.cnn_pre:
           x=self.cnn(x)
+
+      if self.cnn_act != "nothing" and self.cnn_act:
+      	x=self.cnn_act(x)
           
       # Processing hidden layers
       for i in range(self.N_hid):

@@ -167,6 +167,18 @@ def read_opts():
     
  if Config.has_option('architecture', 'cnn_pre'):
     options.cnn_pre=Config.get('architecture', 'cnn_pre')
+
+ if Config.has_option('architecture', 'cnn_type'):
+    options.cnn_type=Config.get('architecture', 'cnn_type')
+
+ if Config.has_option('architecture', 'cnn_filter_size'):
+    options.cnn_filter_size=Config.get('architecture', 'cnn_filter_size')
+
+ if Config.has_option('architecture', 'cnn_paddings'):
+    options.cnn_paddings=Config.get('architecture', 'cnn_paddings')
+
+ if Config.has_option('architecture', 'cnn_act'):
+    options.cnn_act=Config.get('architecture', 'cnn_act')
     
     
  options.N_ep=Config.get('optimization', 'N_ep')
