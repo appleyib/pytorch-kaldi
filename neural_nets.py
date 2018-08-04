@@ -961,9 +961,8 @@ class LSTM(nn.Module):
 # If the kernel size and padding number Are not specfied from the config file,
 # then will be set to 3 and 1 for default.
 class CNN_on_cw(nn.Module):
-    
-    def __init__(self, options):
-       	super(CNN_on_cw,self).__init__()
+	def __init__(self, options):
+    	super(CNN_on_cw,self).__init__()
        	if options.cnn_filter_size:
 			self.cnn_filter_size=int(options.cnn_filter_size)
 		else:
