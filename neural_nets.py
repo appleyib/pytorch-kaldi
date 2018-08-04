@@ -962,8 +962,8 @@ class LSTM(nn.Module):
 # then will be set to 3 and 1 for default.
 class CNN_on_cw(nn.Module):
 	def __init__(self, options):
-    	super(CNN_on_cw,self).__init__()
-       	if options.cnn_filter_size:
+		super(CNN_on_cw,self).__init__()
+		if options.cnn_filter_size:
 			self.cnn_filter_size=int(options.cnn_filter_size)
 		else:
 			self.cnn_filter_size=3
@@ -973,32 +973,31 @@ class CNN_on_cw(nn.Module):
 		else:
 			self.cnn_paddings=1
 
-		self.cw_size = int(options.cw_left) + int(options.cw_right) + 1
-        
-       	# a simplest conv layer
-       	self.conv1 = nn.Conv2d(1, 1, self.cnn_filter_size, padding=(self.cnn_paddings,self.cnn_paddings))
-       
-    def forward(self, x):
-       steps=x.shape[0]
-       batch=x.shape[1]
-       #print 'cw size', self.cw_size
-       #print "input x size", x.shape
-       x=x.view(steps*batch,1,self.cw_size,-1)
-       #print "before conv1 x size", x.shape
-       x=self.conv1(x)
-       #print "after conv1 x size", x.shape
-       x=x.view(steps,batch,-1)
-       #print "out conv1 x size", x.shape
-       return x
+		self.cw_size = int(options.cw_left) + int(options.cw_right) + 1    
+		# a simplest conv layer
+		self.conv1 = nn.Conv2d(1, 1, self.cnn_filter_size, padding=(self.cnn_paddings,self.cnn_paddings))
+
+	def forward(self, x):
+		steps=x.shape[0]
+		batch=x.shape[1]
+		#print 'cw size', self.cw_size
+		#print "input x size", x.shape
+		x=x.view(steps*batch,1,self.cw_size,-1)
+		#print "before conv1 x size", x.shape
+		x=self.conv1(x)
+		#print "after conv1 x size", x.shape
+		x=x.view(steps,batch,-1)
+		#print "out conv1 x size", x.shape
+		return x
 
 # this class represents a CNN layer which is applied on the whole input batch
 # If the kernel size and padding number Are not specfied from the config file,
 # then will be set to 3 and 1 for default.
 class CNN_on_batch(nn.Module):
     
-    def __init__(self, options):
-       	super(CNN_on_batch,self).__init__()
-       	if options.cnn_filter_size:
+	def __init__(self, options):
+		super(CNN_on_batch,self).__init__()
+		if options.cnn_filter_size:
 			self.cnn_filter_size=int(options.cnn_filter_size)
 		else:
 			self.cnn_filter_size=3
@@ -1007,23 +1006,23 @@ class CNN_on_batch(nn.Module):
 			self.cnn_paddings=int(options.cnn_paddings)
 		else:
 			self.cnn_paddings=1
-        
-       	# a simplest conv layer
-       	self.conv1 = nn.Conv2d(1, 1, self.cnn_filter_size, padding=(self.cnn_paddings,self.cnn_paddings))
+
+		# a simplest conv layer
+		self.conv1 = nn.Conv2d(1, 1, self.cnn_filter_size, padding=(self.cnn_paddings,self.cnn_paddings))
        
-    def forward(self, x):
-       #print "input x size", x.shape
-       steps=x.shape[0]
-       batch=x.shape[1]
-       x=x.transpose(x, perm=[1, 0, 2])
-       x=x.view(batch, 1, steps, -1)
-       #print "before conv1 x size", x.shape
-       x=self.conv1(x)
-       #print "after conv1 x size", x.shape
-       x=x.view(batch, steps, -1)
-       x=x.transpose(x, perm=[1, 0, 2])
-       #print "out conv1 x size", x.shape
-       return x
+	def forward(self, x):
+		#print "input x size", x.shape
+		steps=x.shape[0]
+		batch=x.shape[1]
+		x=x.transpose(x, perm=[1, 0, 2])
+		x=x.view(batch, 1, steps, -1)
+		#print "before conv1 x size", x.shape
+		x=self.conv1(x)
+		#print "after conv1 x size", x.shape
+		x=x.view(batch, steps, -1)
+		x=x.transpose(x, perm=[1, 0, 2])
+		#print "out conv1 x size", x.shape
+		return x
 
  
 class CNN_GRU(nn.Module):
