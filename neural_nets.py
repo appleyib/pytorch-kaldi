@@ -1014,13 +1014,13 @@ class CNN_on_batch(nn.Module):
 		#print "input x size", x.shape
 		steps=x.shape[0]
 		batch=x.shape[1]
-		x=x.transpose(x, perm=[1, 0, 2])
+		x=x.permute(1, 0, 2)
 		x=x.view(batch, 1, steps, -1)
 		#print "before conv1 x size", x.shape
 		x=self.conv1(x)
 		#print "after conv1 x size", x.shape
 		x=x.view(batch, steps, -1)
-		x=x.transpose(x, perm=[1, 0, 2])
+		x=x.permute(1, 0, 2)
 		#print "out conv1 x size", x.shape
 		return x
 
