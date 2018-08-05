@@ -1038,7 +1038,6 @@ class CNN_GRU(nn.Module):
         self.use_batchnorm=bool(int(options.use_batchnorm))
         self.use_laynorm=bool(int(options.use_laynorm))
         self.cnn_pre=bool(int(options.cnn_pre))
-        self.cnn_act=options.cnn_act
         self.use_cuda=bool(int(options.use_cuda))
         self.bidir=bool(int(options.bidir))
         self.skip_conn=bool(int(options.skip_conn))
@@ -1049,6 +1048,9 @@ class CNN_GRU(nn.Module):
         self.cost=options.cost
         self.twin_reg=bool(int(options.twin_reg))
         self.twin_w=float(options.twin_w)
+        #self.cnn_act=options.cnn_act
+        self.cnn_act="sigmoid"
+        self.cnn="CNN_on_batch"
         
         
         # List initialization
