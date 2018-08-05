@@ -1050,7 +1050,7 @@ class CNN_GRU(nn.Module):
         self.twin_w=float(options.twin_w)
         #self.cnn_act=options.cnn_act
         self.cnn_act="sigmoid"
-        self.cnn="CNN_on_batch"
+        self.cnn_type="CNN_on_batch"
         
         
         # List initialization
