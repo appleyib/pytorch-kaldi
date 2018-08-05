@@ -1051,6 +1051,9 @@ class CNN_GRU(nn.Module):
         #self.cnn_act=options.cnn_act
         self.cnn_act="sigmoid"
         self.cnn_type="CNN_on_batch"
+        options.cnn_filter_size=3;
+        options.cnn_paddings=1;
+
         
         
         # List initialization
