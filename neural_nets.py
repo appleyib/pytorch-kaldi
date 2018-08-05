@@ -1049,7 +1049,7 @@ class CNN_GRU(nn.Module):
         self.twin_reg=bool(int(options.twin_reg))
         self.twin_w=float(options.twin_w)
         #self.cnn_act=options.cnn_act
-        self.cnn_act="normrelu"
+        self.cnn_act="tanh"
         self.cnn_type="CNN_on_batch"
         options.cnn_filter_size=3;
         options.cnn_paddings=1;
