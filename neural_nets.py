@@ -1050,13 +1050,13 @@ class CNN_GRU(nn.Module):
         self.twin_w=float(options.twin_w)
         #self.cnn_act=options.cnn_act
         self.cnn_act="tanh"
-        self.cnn_type="CNN_on_batch"
+        self.cnn_type="CNN_on_cw"
         options.cnn_filter_size=3;
         options.cnn_paddings=1;
 
         
         
-        # List initialization
+        # List initializations
         self.wzx  = nn.ModuleList([]) # Update Gate
         self.whx  = nn.ModuleList([]) # Candidate (feed-forward)
         
