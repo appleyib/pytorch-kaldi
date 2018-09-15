@@ -990,6 +990,109 @@ class CNN_on_cw(nn.Module):
 		#print "out conv1 x size", x.shape
 		return x
 
+
+# This class represents muti-CNN layer which is applied on one context window.
+# If the kernel size and padding number Are not specfied from the config file,
+# then will be set to 3 and 1 for default.
+class CNNs_on_cw(nn.Module):
+	def __init__(self, options):
+		super(CNNs_on_cw,self).__init__()
+		if options.cnn_filter_size:
+			self.cnn_filter_size=int(options.cnn_filter_size)
+		else:
+			self.cnn_filter_size=3
+
+		if options.cnn_paddings:
+			self.cnn_paddings=int(options.cnn_paddings)
+		else:
+			self.cnn_paddings=1
+
+		self.cw_size = int(options.cw_left) + int(options.cw_right) + 1    
+		# a simplest conv layer
+		self.conv1 = nn.Conv2d(1, 64, self.cnn_filter_size, padding=(self.cnn_paddings,self.cnn_paddings))
+		self.conv2 = nn.Conv2d(64, 64, self.cnn_filter_size, padding=(self.cnn_paddings,self.cnn_paddings))
+		self.conv3 = nn.Conv2d(64, 1, self.cnn_filter_size, padding=(self.cnn_paddings,self.cnn_paddings))
+		self.act = nn.ReLU()
+
+	def forward(self, x):
+		steps=x.shape[0]
+		batch=x.shape[1]
+		#print 'cw size', self.cw_size
+		#print "input x size", x.shape
+		x=x.view(steps*batch,1,self.cw_size,-1)
+		#print "before conv1 x size", x.shape
+		x=self.conv1(x)
+		x=self.act(x)
+		x=self.conv2(x)
+		x=self.act(x)
+		x=self.conv3(x)
+		#print "after conv4 x size", x.shape
+		x=x.view(steps,batch,-1)
+		#print "out conv1 x size", x.shape
+		return x
+
+
+# This class represents a muti-CNN layer which is applied on each context window.
+# The kernel size will be 3 and the padding size will be 0, which means the size of
+# the context window will be eliminated after several layers.
+# Note: better to set the CW size to be 7 in this case
+
+class special_CNNs_on_cw(nn.Module):
+	def __init__(self, options):
+		super(special_CNNs_on_cw,self).__init__()
+		if options.cnn_filter_size:
+			self.cnn_filter_size=int(options.cnn_filter_size)
+		else:
+			self.cnn_filter_size=3
+
+		self.calc_channel_size = 32
+		self.cw_size = int(options.cw_left) + int(options.cw_right) + 1    
+		# a simplest conv layer
+		self.conv1 = nn.Conv2d(1, self.calc_channel_size, self.cnn_filter_size, padding=(0,1))
+		self.conv2 = nn.Conv2d(self.calc_channel_size, self.calc_channel_size, self.cnn_filter_size, padding=(0,1))
+		#self.conv3 = nn.Conv2d(self.calc_channel_size, self.calc_channel_size, self.cnn_filter_size, padding=(0,1))
+		self.conv3 = nn.Conv2d(self.calc_channel_size, 1, self.cnn_filter_size, padding=(0,1))
+		self.act = nn.ReLU()
+
+	def forward(self, x):
+		steps=x.shape[0]
+		batch=x.shape[1]
+		#print 'cw size', self.cw_size
+		#print "input x size", x.shape
+		x=x.view(steps*batch,1,self.cw_size,-1)
+		#print "before conv1 x size", x.shape
+		x=self.conv1(x)
+		x=self.act(x)
+		x=self.conv2(x)
+		x=self.act(x)
+		x=self.conv3(x)
+		#print "after conv1 x size", x.shape
+
+		# ----- 1. Summing up calc channels ---- #
+		#torch.sum(x, dim=1)
+		# sum it in conv3
+		x=x.view(steps,batch,-1)
+
+		# ----------------------------------#
+
+
+
+		# ------ 2. Summing up batches ------- #
+		# x=x.view(steps, batch, -1)
+		# torch.sum(x, dim=1)
+		# x=x.view(steps, self.calc_channel_size, -1)
+		# ------------------------------------- #
+
+
+
+		# -------- 3. No summing up ---------- #
+		#x=x.view(steps, batch*self.calc_channel_size, -1);
+		#print "out conv4 x size", x.shape
+		#
+		# x = torch.sum(x, dim=3)
+		return x
+
+
 # this class represents a CNN layer which is applied on the whole input batch
 # If the kernel size and padding number Are not specfied from the config file,
 # then will be set to 3 and 1 for default.
@@ -1024,6 +1127,8 @@ class CNN_on_batch(nn.Module):
 		#print "out conv1 x size", x.shape
 		return x
 
+
+
  
 class CNN_GRU(nn.Module):
     def __init__(self, options):
@@ -1048,8 +1153,9 @@ class CNN_GRU(nn.Module):
         self.cost=options.cost
         self.twin_reg=bool(int(options.twin_reg))
         self.twin_w=float(options.twin_w)
+        self.cw_size = int(options.cw_left) + int(options.cw_right) + 1
         #self.cnn_act=options.cnn_act
-        self.cnn_act="tanh"
+        self.cnn_act="nothing"
         self.cnn_type="CNN_on_cw"
         options.cnn_filter_size=3;
         options.cnn_paddings=1;
@@ -1100,12 +1206,19 @@ class CNN_GRU(nn.Module):
             self.act_gate=normrelu()
         
         curr_dim=self.input_dim
+
         
         # also puts cnn layer before GRU
         # We will use original input channel dimension for now
+        curr_dim=self.input_dim
         if self.cnn_pre:
             if self.cnn_type=="CNN_on_batch":
                 self.cnn=CNN_on_batch(options)
+            elif self.cnn_type=="special_CNNs_on_cw":
+            	self.cnn=special_CNNs_on_cw(options)
+            	curr_dim=self.input_dim/self.cw_size
+            elif self.cnn_type=="CNNs_on_cw":
+            	self.cnn=CNNs_on_cw(options)
             else:
                 self.cnn=CNN_on_cw(options)
 
