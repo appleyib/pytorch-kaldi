@@ -3,6 +3,7 @@ import torch
 from torch.autograd import Variable
 import torch.nn.functional as F
 import torch.nn as nn
+from pydrobert.mellin.torch import MellinLinearCorrelation
 import sys
 
 
@@ -960,22 +961,14 @@ class LSTM(nn.Module):
 # This class represents a CNN layer which is applied on one context window.
 # If the kernel size and padding number Are not specfied from the config file,
 # then will be set to 3 and 1 for default.
-class CNN_on_cw(nn.Module):
+class mCNN_on_cw(nn.Module):
 	def __init__(self, options):
 		super(CNN_on_cw,self).__init__()
-		if options.cnn_filter_size:
-			self.cnn_filter_size=int(options.cnn_filter_size)
-		else:
-			self.cnn_filter_size=3
 
-		if options.cnn_paddings:
-			self.cnn_paddings=int(options.cnn_paddings)
-		else:
-			self.cnn_paddings=1
 
 		self.cw_size = int(options.cw_left) + int(options.cw_right) + 1    
 		# a simplest conv layer
-		self.conv1 = nn.Conv2d(1, 1, self.cnn_filter_size, padding=(self.cnn_paddings,self.cnn_paddings))
+		self.mconv1 = MellinLinearCorrelation(1, 1, (3,3), p=(2,1), r=(0,1))
 
 	def forward(self, x):
 		steps=x.shape[0]
@@ -984,11 +977,45 @@ class CNN_on_cw(nn.Module):
 		#print "input x size", x.shape
 		x=x.view(steps*batch,1,self.cw_size,-1)
 		#print "before conv1 x size", x.shape
-		x=self.conv1(x)
+		x=self.mconv1(x)
 		#print "after conv1 x size", x.shape
 		x=x.view(steps,batch,-1)
 		#print "out conv1 x size", x.shape
 		return x
+
+
+# This class represents a mellin-CNN layer which is applied on one context window.
+# If the kernel size and padding number Are not specfied from the config file,
+# then will be set to 3 and 1 for default.
+class CNN_on_cw(nn.Module):
+  def __init__(self, options):
+    super(CNN_on_cw,self).__init__()
+    if options.cnn_filter_size:
+      self.cnn_filter_size=int(options.cnn_filter_size)
+    else:
+      self.cnn_filter_size=3
+
+    if options.cnn_paddings:
+      self.cnn_paddings=int(options.cnn_paddings)
+    else:
+      self.cnn_paddings=1
+
+    self.cw_size = int(options.cw_left) + int(options.cw_right) + 1    
+    # a simplest conv layer
+    self.conv1 = nn.Conv2d(1, 1, self.cnn_filter_size, padding=(self.cnn_paddings,self.cnn_paddings))
+
+  def forward(self, x):
+    steps=x.shape[0]
+    batch=x.shape[1]
+    #print 'cw size', self.cw_size
+    #print "input x size", x.shape
+    x=x.view(steps*batch,1,self.cw_size,-1)
+    #print "before conv1 x size", x.shape
+    x=self.conv1(x)
+    #print "after conv1 x size", x.shape
+    x=x.view(steps,batch,-1)
+    #print "out conv1 x size", x.shape
+    return x
 
 
 # This class represents muti-CNN layer which is applied on one context window.
@@ -1030,7 +1057,6 @@ class CNNs_on_cw(nn.Module):
 		x=x.view(steps,batch,-1)
 		#print "out conv1 x size", x.shape
 		return x
-
 
 # This class represents a muti-CNN layer which is applied on each context window.
 # The kernel size will be 3 and the padding size will be 0, which means the size of
@@ -1156,7 +1182,9 @@ class CNN_GRU(nn.Module):
         self.cw_size = int(options.cw_left) + int(options.cw_right) + 1
         #self.cnn_act=options.cnn_act
         self.cnn_act="nothing"
-        self.cnn_type="CNN_on_cw"
+
+        self.cnn_type="mCNN_on_cw"
+
         options.cnn_filter_size=3;
         options.cnn_paddings=1;
 
@@ -1219,6 +1247,8 @@ class CNN_GRU(nn.Module):
             	curr_dim=self.input_dim/self.cw_size
             elif self.cnn_type=="CNNs_on_cw":
             	self.cnn=CNNs_on_cw(options)
+            elif self.cnn_type=="mCNN_on_cw":
+              self.cnn=mCNN_on_cw(options)
             else:
                 self.cnn=CNN_on_cw(options)
 
