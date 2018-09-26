@@ -1,0 +1,19 @@
+# compile-train-graphs --read-disambig-syms=data/lang/phones/disambig.int exp/dnn4_pretrain-dbn_dnn_ali/tree exp/dnn4_pretrain-dbn_dnn_ali/final.mdl data/lang/L.fst "ark:utils/sym2int.pl --map-oov 38 -f 2- data/lang/words.txt data-fmllr-tri3/train/split4/1/text |" ark:- | align-compiled-mapped --transition-scale=1.0 --acoustic-scale=0.1 --self-loop-scale=0.1 --beam=10 --retry-beam=40 exp/dnn4_pretrain-dbn_dnn_ali/final.mdl ark:- "ark,s,cs:copy-feats scp:data-fmllr-tri3/train/split4/1/feats.scp ark:- | nnet-forward --no-softmax=true --prior-scale=1.0 --feature-transform=exp/dnn4_pretrain-dbn_dnn/final.feature_transform --class-frame-counts=exp/dnn4_pretrain-dbn_dnn/ali_train_pdf.counts --use-gpu=no exp/dnn4_pretrain-dbn_dnn/final.nnet ark:- ark:- |" "ark,t:|gzip -c >exp/dnn4_pretrain-dbn_dnn_ali/ali.1.gz" 
+# Started at Fri May 18 12:08:58 EDT 2018
+#
+align-compiled-mapped --transition-scale=1.0 --acoustic-scale=0.1 --self-loop-scale=0.1 --beam=10 --retry-beam=40 exp/dnn4_pretrain-dbn_dnn_ali/final.mdl ark:- 'ark,s,cs:copy-feats scp:data-fmllr-tri3/train/split4/1/feats.scp ark:- | nnet-forward --no-softmax=true --prior-scale=1.0 --feature-transform=exp/dnn4_pretrain-dbn_dnn/final.feature_transform --class-frame-counts=exp/dnn4_pretrain-dbn_dnn/ali_train_pdf.counts --use-gpu=no exp/dnn4_pretrain-dbn_dnn/final.nnet ark:- ark:- |' 'ark,t:|gzip -c >exp/dnn4_pretrain-dbn_dnn_ali/ali.1.gz' 
+compile-train-graphs --read-disambig-syms=data/lang/phones/disambig.int exp/dnn4_pretrain-dbn_dnn_ali/tree exp/dnn4_pretrain-dbn_dnn_ali/final.mdl data/lang/L.fst 'ark:utils/sym2int.pl --map-oov 38 -f 2- data/lang/words.txt data-fmllr-tri3/train/split4/1/text |' ark:- 
+copy-feats scp:data-fmllr-tri3/train/split4/1/feats.scp ark:- 
+nnet-forward --no-softmax=true --prior-scale=1.0 --feature-transform=exp/dnn4_pretrain-dbn_dnn/final.feature_transform --class-frame-counts=exp/dnn4_pretrain-dbn_dnn/ali_train_pdf.counts --use-gpu=no exp/dnn4_pretrain-dbn_dnn/final.nnet ark:- ark:- 
+LOG (nnet-forward[5.4.132~1-f8b67]:SelectGpuId():cu-device.cc:123) Manually selected to compute on CPU.
+LOG (nnet-forward[5.4.132~1-f8b67]:main():nnet-forward.cc:93) Removing <Softmax> from the nnet exp/dnn4_pretrain-dbn_dnn/final.nnet
+LOG (nnet-forward[5.4.132~1-f8b67]:PdfPrior():nnet-pdf-prior.cc:34) Computing pdf-priors from : exp/dnn4_pretrain-dbn_dnn/ali_train_pdf.counts
+LOG (nnet-forward[5.4.132~1-f8b67]:PdfPrior():nnet-pdf-prior.cc:64) Floored 0 pdf-priors (hard-set to 1.84467e+19, which disables DNN output when decoding)
+LOG (compile-train-graphs[5.4.132~1-f8b67]:main():compile-train-graphs.cc:147) compile-train-graphs: succeeded for 928 graphs, failed for 0
+LOG (copy-feats[5.4.132~1-f8b67]:main():copy-feats.cc:143) Copied 928 feature matrices.
+LOG (nnet-forward[5.4.132~1-f8b67]:main():nnet-forward.cc:192) Done 928 files in 3.21046min, (fps 1505.44)
+LOG (align-compiled-mapped[5.4.132~1-f8b67]:main():align-compiled-mapped.cc:128) Overall log-likelihood per frame is 25.2237 over 289989 frames.
+LOG (align-compiled-mapped[5.4.132~1-f8b67]:main():align-compiled-mapped.cc:130) Retried 0 out of 928 utterances.
+LOG (align-compiled-mapped[5.4.132~1-f8b67]:main():align-compiled-mapped.cc:132) Done 928, errors on 0
+# Accounting: time=198 threads=1
+# Ended (code 0) at Fri May 18 12:12:17 EDT 2018, elapsed time 198 seconds

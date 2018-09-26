@@ -1058,7 +1058,6 @@ class CNNs_on_cw(nn.Module):
 		#print "out conv1 x size", x.shape
 		return x
 
-
 # This class represents a muti-CNN layer which is applied on each context window.
 # The kernel size will be 3 and the padding size will be 0, which means the size of
 # the context window will be eliminated after several layers.
@@ -1183,7 +1182,9 @@ class CNN_GRU(nn.Module):
         self.cw_size = int(options.cw_left) + int(options.cw_right) + 1
         #self.cnn_act=options.cnn_act
         self.cnn_act="nothing"
+
         self.cnn_type="mCNN_on_cw"
+
         options.cnn_filter_size=3;
         options.cnn_paddings=1;
 

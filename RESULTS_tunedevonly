@@ -1,6 +1,6 @@
 #!/bin/bash
 #This batch outputs the WER of test set generated from the weight of the language model weight that has lowest WER in dev set to.
-for x in exp/TIMIT_liGRU_fmllr_Third_Try/decoding_dev; do
+for x in exp/{TIMIT_liGRU_fmllr_Third_Try,TIMIT_CNN_GRU_3x3}/decoding_dev; do
 	if [ -d "$x" ]; then
 		# find the best WER for the dev set
 		dev_wer=$(
