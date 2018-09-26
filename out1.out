@@ -1,0 +1,31 @@
+Training...
+Forward...
+Decoding..
+/u/wangyiz3/proj/kaldi/egs/timit/s5/exp/tri3/graph
+/u/wangyiz3/proj/kaldi/egs/timit/s5/data/test
+/u/wangyiz3/proj/pytorch-kaldi/kaldi_data/dnn4_pretrain-dbn_dnn_ali
+../exp/CNN_1C_1/decoding_test
+cat ../exp/CNN_1C_1/forward_ep_24_ck_4.pkl
+
+
+
+
+./decode_dnn_TIMIT.sh /u/wangyiz3/proj/kaldi/egs/timit/s5/exp/tri3/graph /u/wangyiz3/proj/kaldi/egs/timit/s5/data/test /u/wangyiz3/proj/pytorch-kaldi/kaldi_data/dnn4_pretrain-dbn_dnn_ali ../exp/CNN_1C_1/decoding_test cat ../exp/CNN_1C_1/forward_ep_24_ck_4.pkl
+rm: cannot remove '../exp/CNN_1C_1/decoding_test/scoring/1.1.ctm': No such file or directory
+cat: '../exp/CNN_1C_1/decoding_test/scoring/2.*.ctm': No such file or directory
+rm: cannot remove '../exp/CNN_1C_1/decoding_test/scoring/2.*.ctm': No such file or directory
+rm: cannot remove '../exp/CNN_1C_1/decoding_test/scoring/3.*.ctm': No such file or directory
+cat: '../exp/CNN_1C_1/decoding_test/scoring/4.*.ctm': No such file or directory
+rm: cannot remove '../exp/CNN_1C_1/decoding_test/scoring/4.*.ctm': No such file or directory
+cat: '../exp/CNN_1C_1/decoding_test/scoring/5.*.ctm': No such file or directory
+rm: cannot remove '../exp/CNN_1C_1/decoding_test/scoring/5.*.ctm': No such file or directory
+cat: '../exp/CNN_1C_1/decoding_test/scoring/6.*.ctm': No such file or directory
+rm: cannot remove '../exp/CNN_1C_1/decoding_test/scoring/6.*.ctm': No such file or directory
+cat: '../exp/CNN_1C_1/decoding_test/scoring/7.*.ctm': No such file or directory
+rm: cannot remove '../exp/CNN_1C_1/decoding_test/scoring/7.*.ctm': No such file or directory
+cat: '../exp/CNN_1C_1/decoding_test/scoring/8.*.ctm': No such file or directory
+rm: cannot remove '../exp/CNN_1C_1/decoding_test/scoring/8.*.ctm': No such file or directory
+cat: '../exp/CNN_1C_1/decoding_test/scoring/9.*.ctm': No such file or directory
+rm: cannot remove '../exp/CNN_1C_1/decoding_test/scoring/9.*.ctm': No such file or directory
+cat: '../exp/CNN_1C_1/decoding_test/scoring/10.*.ctm': No such file or directory
+rm: cannot remove '../exp/CNN_1C_1/decoding_test/scoring/10.*.ctm': No such file or directory
