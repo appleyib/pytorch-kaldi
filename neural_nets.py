@@ -958,12 +958,12 @@ class LSTM(nn.Module):
 
 
 
-# This class represents a CNN layer which is applied on one context window.
+# This class represents a mellin-CNN layer which is applied on one context window.
 # If the kernel size and padding number Are not specfied from the config file,
 # then will be set to 3 and 1 for default.
 class mCNN_on_cw(nn.Module):
 	def __init__(self, options):
-		super(CNN_on_cw,self).__init__()
+		super(mCNN_on_cw,self).__init__()
 
 
 		self.cw_size = int(options.cw_left) + int(options.cw_right) + 1    
@@ -984,7 +984,8 @@ class mCNN_on_cw(nn.Module):
 		return x
 
 
-# This class represents a mellin-CNN layer which is applied on one context window.
+
+# This class represents a CNN layer which is applied on one context window.
 # If the kernel size and padding number Are not specfied from the config file,
 # then will be set to 3 and 1 for default.
 class CNN_on_cw(nn.Module):
