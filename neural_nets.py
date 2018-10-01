@@ -1333,7 +1333,7 @@ class CNN_GRU(nn.Module):
       #     lab=lab.cuda()
       #     h_init=h_init.cuda()
       #     drop_mask=drop_mask.cuda()
-      x.cpu()
+      self.cnn.cpu()
           
       if self.twin_reg:
           reg=0
