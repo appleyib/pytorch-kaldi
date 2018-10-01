@@ -1333,23 +1333,23 @@ class CNN_GRU(nn.Module):
       #     lab=lab.cuda()
       #     h_init=h_init.cuda()
       #     drop_mask=drop_mask.cuda()
-      self.cnn.cpu()
           
       if self.twin_reg:
           reg=0
+
+      self.cnn.cpu()
           
       if self.cnn_pre:
           x=self.cnn(x)
-
-      if self.cnn_act != "nothing" and self.cnn_act:
-      	x=self.cnn_act(x)
-
 
       if self.use_cuda:
           x=x.cuda()
           lab=lab.cuda()
           h_init=h_init.cuda()
           drop_mask=drop_mask.cuda()
+
+      if self.cnn_act != "nothing" and self.cnn_act:
+      	x=self.cnn_act(x)
 
 
       # Processing hidden layers
