@@ -1328,11 +1328,12 @@ class CNN_GRU(nn.Module):
       else:
          drop_mask=Variable(torch.FloatTensor([1-self.drop_rate]))
           
-      if self.use_cuda:
-          x=x.cuda()
-          lab=lab.cuda()
-          h_init=h_init.cuda()
-          drop_mask=drop_mask.cuda()
+      # if self.use_cuda:
+      #     x=x.cuda()
+      #     lab=lab.cuda()
+      #     h_init=h_init.cuda()
+      #     drop_mask=drop_mask.cuda()
+      x.cpu()
           
       if self.twin_reg:
           reg=0
@@ -1342,7 +1343,15 @@ class CNN_GRU(nn.Module):
 
       if self.cnn_act != "nothing" and self.cnn_act:
       	x=self.cnn_act(x)
-          
+
+
+      if self.use_cuda:
+          x=x.cuda()
+          lab=lab.cuda()
+          h_init=h_init.cuda()
+          drop_mask=drop_mask.cuda()
+
+
       # Processing hidden layers
       for i in range(self.N_hid):
         
