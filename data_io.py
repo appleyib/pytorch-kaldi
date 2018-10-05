@@ -83,7 +83,7 @@ def load_chunk(fea_scp,fea_opts,lab_folder,lab_opts,left,right,shuffle_seed):
   
 def load_counts(class_counts_file):
     with open(class_counts_file) as f:
-        row = f.next().strip().strip('[]').strip()
+        row = next(f).strip().strip('[]').strip()
         counts = np.array([ np.float32(v) for v in row.split() ])
     return counts    
         
