@@ -983,6 +983,35 @@ class mCNN_on_cw(nn.Module):
 		#print "out conv1 x size", x.shape
 		return x
 
+# This class represents a mellin-CNNs layer which is applied on one context window.
+# If the kernel size and padding number Are not specfied from the config file,
+# then will be set to 3 and 1 for default.
+class mCNNs_on_cw(nn.Module):
+  def __init__(self, options):
+    super(mCNNs_on_cw,self).__init__()
+
+
+    self.cw_size = int(options.cw_left) + int(options.cw_right) + 1    
+    # a simplest conv layer
+    self.mconv1 = MellinLinearCorrelation(1, 8, (3,3), p=(2,1), r=(0,1))
+    self.mconv2 = MellinLinearCorrelation(8, 1, (3,3), p=(2,1), r=(0,1))
+
+  def forward(self, x):
+    steps=x.shape[0]
+    batch=x.shape[1]
+    #print 'cw size', self.cw_size
+    #print "input x size", x.shape
+    x=x.view(steps*batch,1,self.cw_size,-1)
+    #print "before conv1 x size", x.shape
+    x=self.mconv1(x)
+    x=self.mconv2(x)
+    #print "after conv1 x size", x.shape
+    x=x.view(steps,batch,-1)
+    #print "out conv1 x size", x.shape
+    return x
+
+
+
 
 
 # This class represents a CNN layer which is applied on one context window.
@@ -1184,7 +1213,7 @@ class CNN_GRU(nn.Module):
         #self.cnn_act=options.cnn_act
         self.cnn_act="nothing"
 
-        self.cnn_type="mCNN_on_cw"
+        self.cnn_type="mCNNs_on_cw"
 
         options.cnn_filter_size=3;
         options.cnn_paddings=1;
@@ -1250,6 +1279,8 @@ class CNN_GRU(nn.Module):
             	self.cnn=CNNs_on_cw(options)
             elif self.cnn_type=="mCNN_on_cw":
               self.cnn=mCNN_on_cw(options)
+            elif self.cnn_type=="mCNNs_on_cw":
+              self.cnn=mCNNs_on_cw(options)
             else:
                 self.cnn=CNN_on_cw(options)
 
