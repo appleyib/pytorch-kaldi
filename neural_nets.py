@@ -993,8 +993,9 @@ class mCNNs_on_cw(nn.Module):
 
     self.cw_size = int(options.cw_left) + int(options.cw_right) + 1    
     # a simplest conv layer
-    self.mconv1 = MellinLinearCorrelation(1, 8, (3,3), p=(2,1), r=(0,1))
-    self.mconv2 = MellinLinearCorrelation(8, 1, (3,3), p=(2,1), r=(0,1))
+    self.mconv1 = MellinLinearCorrelation(1, 32, (3,3), p=(2,1), r=(0,1))
+    self.mconv2 = MellinLinearCorrelation(32, 32, (3,3), p=(2,1), r=(0,1))
+    self.mconv3 = MellinLinearCorrelation(32, 1, (3,3), p=(2,1), r=(0,1))
 
   def forward(self, x):
     steps=x.shape[0]
@@ -1005,6 +1006,7 @@ class mCNNs_on_cw(nn.Module):
     #print "before conv1 x size", x.shape
     x=self.mconv1(x)
     x=self.mconv2(x)
+    x=self.mconv3(x)
     #print "after conv1 x size", x.shape
     x=x.view(steps,batch,-1)
     #print "out conv1 x size", x.shape
