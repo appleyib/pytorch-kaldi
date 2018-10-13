@@ -1314,7 +1314,7 @@ class CNN_GRU(nn.Module):
             elif self.cnn_type=="mCNNs_on_cw_pad0":
               print(self.input_dim)
               self.cnn=mCNNs_on_cw_pad0(options)
-              curr_dim=int(inself.input_dim/9)
+              curr_dim=int(self.input_dim/9)
               print(curr_dim)
             else:
                 self.cnn=CNN_on_cw(options)
