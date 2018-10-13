@@ -1031,12 +1031,12 @@ class mCNNs_on_cw_pad0(nn.Module):
     #print 'cw size', self.cw_size
     #print "input x size", x.shape
     x=x.view(steps*batch,1,self.cw_size,-1)
-    print("before conv1 x size", x.shape)
+    # print("before conv1 x size", x.shape)
     x=self.mconv1(x)
-    print("after conv1 x size", x.shape)
+    # print("after conv1 x size", x.shape)
     x=self.act(x)
     x=self.mconv2(x)
-    print("after conv2 x size", x.shape)
+    # print("after conv2 x size", x.shape)
     x=x.view(steps,batch,-1)
     #print "out conv1 x size", x.shape
     return x
@@ -1312,10 +1312,8 @@ class CNN_GRU(nn.Module):
             elif self.cnn_type=="mCNNs_on_cw":
               self.cnn=mCNNs_on_cw(options)
             elif self.cnn_type=="mCNNs_on_cw_pad0":
-              print(self.input_dim)
               self.cnn=mCNNs_on_cw_pad0(options)
               curr_dim=int(self.input_dim/9)
-              print(curr_dim)
             else:
                 self.cnn=CNN_on_cw(options)
 
