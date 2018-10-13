@@ -1033,7 +1033,7 @@ class mCNNs_on_cw_pad0(nn.Module):
     x=x.view(steps*batch,1,self.cw_size,-1)
     print("before conv1 x size", x.shape)
     x=self.mconv1(x)
-     print("after conv1 x size", x.shape)
+    print("after conv1 x size", x.shape)
     x=self.act(x)
     x=self.mconv2(x)
     print("after conv2 x size", x.shape)
