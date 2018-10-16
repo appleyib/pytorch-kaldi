@@ -1020,8 +1020,8 @@ class mCNNs_on_cw_pad0(nn.Module):
 
     self.cw_size = int(options.cw_left) + int(options.cw_right) + 1    
     # a simplest conv layer
-    self.mconv1 = MellinLinearCorrelation(1, 8, (3,3), p=(0,1), r=(0,1))
-    self.mconv2 = MellinLinearCorrelation(8, 1, (3,3), p=(0,1), r=(0,1))
+    self.mconv1 = MellinLinearCorrelation(1, 8, (3,3), p=(2,1), r=(0,1))
+    self.mconv2 = MellinLinearCorrelation(8, 1, (3,3), p=(2,1), r=(0,1))
     self.act = nn.ReLU()
 
 
@@ -1036,6 +1036,35 @@ class mCNNs_on_cw_pad0(nn.Module):
     # print("after conv1 x size", x.shape)
     x=self.act(x)
     x=self.mconv2(x)
+    # print("after conv2 x size", x.shape)
+    x=x.view(steps,batch,-1)
+    #print "out conv1 x size", x.shape
+    return x
+
+
+class mCNNs_and_CNNs_on_cw(nn.Module):
+  def __init__(self, options):
+    super(mCNNs_and_CNNs_on_cw,self).__init__()
+
+
+    self.cw_size = int(options.cw_left) + int(options.cw_right) + 1    
+    # a simplest conv layer
+    self.mconv1 = MellinLinearCorrelation(1, 64, (3,3), p=(2,1), r=(0,1))
+    self.conv1 = nn.Conv2d(64, 1, 3, padding=(1,1))
+    self.act = nn.ReLU()
+
+
+  def forward(self, x):
+    steps=x.shape[0]
+    batch=x.shape[1]
+    #print 'cw size', self.cw_size
+    #print "input x size", x.shape
+    x=x.view(steps*batch,1,self.cw_size,-1)
+    # print("before conv1 x size", x.shape)
+    x=self.mconv1(x)
+    # print("after conv1 x size", x.shape)
+    x=self.act(x)
+    x=self.conv1(x)
     # print("after conv2 x size", x.shape)
     x=x.view(steps,batch,-1)
     #print "out conv1 x size", x.shape
@@ -1243,7 +1272,7 @@ class CNN_GRU(nn.Module):
         #self.cnn_act=options.cnn_act
         self.cnn_act="nothing"
 
-        self.cnn_type="mCNNs_on_cw_pad0"
+        self.cnn_type="mCNNs_and_CNNs_on_cw"
 
         options.cnn_filter_size=3;
         options.cnn_paddings=1;
@@ -1314,6 +1343,8 @@ class CNN_GRU(nn.Module):
             elif self.cnn_type=="mCNNs_on_cw_pad0":
               self.cnn=mCNNs_on_cw_pad0(options)
               curr_dim=int(self.input_dim/9)
+            elif self.cnn_type="mCNNs_and_CNNs_on_cw":
+              self.cnn=mCNNs_and_CNNs_on_cw(options)
             else:
                 self.cnn=CNN_on_cw(options)
 
