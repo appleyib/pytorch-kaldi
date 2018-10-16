@@ -1343,7 +1343,7 @@ class CNN_GRU(nn.Module):
             elif self.cnn_type=="mCNNs_on_cw_pad0":
               self.cnn=mCNNs_on_cw_pad0(options)
               curr_dim=int(self.input_dim/9)
-            elif self.cnn_type="mCNNs_and_CNNs_on_cw":
+            elif self.cnn_type=="mCNNs_and_CNNs_on_cw":
               self.cnn=mCNNs_and_CNNs_on_cw(options)
             else:
                 self.cnn=CNN_on_cw(options)
