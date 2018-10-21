@@ -993,9 +993,9 @@ class mCNNs_on_cw(nn.Module):
 
     self.cw_size = int(options.cw_left) + int(options.cw_right) + 1    
     # a simplest conv layer
-    self.mconv1 = MellinLinearCorrelation(1, 32, (3,3), p=(2,1), r=(0,1))
-    self.mconv2 = MellinLinearCorrelation(32, 32, (3,3), p=(2,1), r=(0,1))
-    self.mconv3 = MellinLinearCorrelation(32, 1, (3,3), p=(2,1), r=(0,1))
+    self.mconv1 = MellinLinearCorrelation(1, 64, (4,3), p=(3,1), r=(0,1))
+    self.mconv2 = MellinLinearCorrelation(64, 64, (4,3), p=(3,1), r=(0,1))
+    self.mconv3 = MellinLinearCorrelation(64, 1, (4,3), p=(3,1), r=(0,1))
     self.act = nn.ReLU()
 
   def forward(self, x):
@@ -1272,7 +1272,7 @@ class CNN_GRU(nn.Module):
         #self.cnn_act=options.cnn_act
         self.cnn_act="nothing"
 
-        self.cnn_type="mCNNs_and_CNNs_on_cw"
+        self.cnn_type="mCNNs_on_cw"
 
         options.cnn_filter_size=3;
         options.cnn_paddings=1;
