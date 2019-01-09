@@ -1,0 +1,5 @@
+model_in=exp/mCNN_1C_left_shift/train_ep_18_ck_4.pkl
+fea_in=/u/wangyiz3/proj/pytorch-kaldi/fmllr_shu/train_split.000
+loss=0.474679
+err=0.165915
+elapsed_time=104.167272

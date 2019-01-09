@@ -195,15 +195,17 @@ for i in range(N_batches):
     
    if do_eval:
       end_snt=data_end_index[i]
-      inp= Variable(data_set[beg_snt:end_snt,0:N_fea],volatile=True).contiguous()
-      lab= Variable(data_set[beg_snt:end_snt,N_fea],volatile=True).contiguous().long()
+      inp= Variable(data_set[beg_snt:end_snt,0:N_fea]).contiguous()
+      lab= Variable(data_set[beg_snt:end_snt,N_fea]).contiguous().long()
       if rnn==1:
         inp=inp.view(inp.shape[0],1,inp.shape[1])
         lab=lab.view(lab.shape[0],1)
       beg_snt=data_end_index[i]
-    
-   
-   [loss,err,pout] = net(inp,lab,test_flag)
+      with torch.no_grad():
+        [loss,err,pout] = net(inp,lab,test_flag)
+   else:
+    [loss,err,pout] = net(inp,lab,test_flag)
+      
    
    if multi_gpu:
      loss=loss.mean()

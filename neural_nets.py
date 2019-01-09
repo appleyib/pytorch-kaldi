@@ -1127,9 +1127,9 @@ class CNNs_on_cw(nn.Module):
 
 		self.cw_size = int(options.cw_left) + int(options.cw_right) + 1    
 		# a simplest conv layer
-		self.conv1 = nn.Conv2d(1, 64, self.cnn_filter_size, padding=(self.cnn_paddings,self.cnn_paddings))
-		self.conv2 = nn.Conv2d(64, 64, self.cnn_filter_size, padding=(self.cnn_paddings,self.cnn_paddings))
-		self.conv3 = nn.Conv2d(64, 1, self.cnn_filter_size, padding=(self.cnn_paddings,self.cnn_paddings))
+		self.conv1 = nn.Conv2d(1, 64, (3,3), padding=(1,1))
+		self.conv2 = nn.Conv2d(64, 64, (3,3), padding=(1,1))
+		self.conv3 = nn.Conv2d(64, 1, (3,3), padding=(1,1))
 		self.act = nn.ReLU()
 
 	def forward(self, x):
@@ -1138,7 +1138,7 @@ class CNNs_on_cw(nn.Module):
 		#print 'cw size', self.cw_size
 		#print "input x size", x.shape
 		x=x.view(steps*batch,1,self.cw_size,-1)
-		#print "before conv1 x size", x.shape
+		#print "before conv1 x size"cw_size, x.shape
 		x=self.conv1(x)
 		x=self.act(x)
 		x=self.conv2(x)
@@ -1274,7 +1274,7 @@ class CNN_GRU(nn.Module):
         #self.cnn_act=options.cnn_act
         self.cnn_act="nothing"
 
-        self.cnn_type="mCNNs_on_cw"
+        self.cnn_type="CNN_on_cw"
 
         options.cnn_filter_size=3;
         options.cnn_paddings=1;
