@@ -1,5 +1,0 @@
-model_in=exp/mCNNs_3L_32C_2/train_ep_09_ck_4.pkl
-fea_in=/u/wangyiz3/proj/pytorch-kaldi/fmllr_shu/test_split.000
-loss=1.407804
-err=0.388658
-elapsed_time=92.273596
