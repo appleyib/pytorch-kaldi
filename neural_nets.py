@@ -1127,9 +1127,9 @@ class CNNs_on_cw(nn.Module):
 
 		self.cw_size = int(options.cw_left) + int(options.cw_right) + 1    
 		# a simplest conv layer
-		self.conv1 = nn.Conv2d(1, 64, (3,3), padding=(1,1))
-		self.conv2 = nn.Conv2d(64, 64, (3,3), padding=(1,1))
-		self.conv3 = nn.Conv2d(64, 1, (3,3), padding=(1,1))
+		self.conv1 = nn.Conv2d(1, 128, (5,3), padding=(2,1))
+		self.conv2 = nn.Conv2d(128, 128, (5,3), padding=(2,1))
+		self.conv3 = nn.Conv2d(128, 1, (5,3), padding=(2,1))
 		self.act = nn.ReLU()
 
 	def forward(self, x):
@@ -1274,7 +1274,7 @@ class CNN_GRU(nn.Module):
         #self.cnn_act=options.cnn_act
         self.cnn_act="nothing"
 
-        self.cnn_type="CNN_on_cw"
+        self.cnn_type="CNNs_on_cw"
 
         options.cnn_filter_size=3;
         options.cnn_paddings=1;
