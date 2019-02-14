@@ -6,5 +6,5 @@ This repository adds some custom DNN layers on the original pytorch-kaldi and us
 The original repository uses the lanugage model weight which is from the test set that has lowest WER.
 
 ## Prerequisites & How to run:
-Check the readme file in the original reposiotry. Also, make sure the python version is 2.7.x.
+Check the readme file in the original reposiotry. The code has been modified to support python 3.
 
